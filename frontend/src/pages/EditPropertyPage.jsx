@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { getPropertyById, updateProperty } from "../services/propertyService";
 
 const EditPropertyPage = () => {
   const { propertyId } = useParams();
@@ -15,7 +16,6 @@ const EditPropertyPage = () => {
   const [squareFeet, setSquareFeet] = useState("");
   const [yearBuilt, setYearBuilt] = useState("");
   const [bedrooms, setBedrooms] = useState("");
-
   const [loading, setLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
@@ -23,13 +23,7 @@ const EditPropertyPage = () => {
   useEffect(() => {
     const fetchProperty = async () => {
       try {
-        const response = await fetch(`/api/properties/${propertyId}`);
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch property");
-        }
-
-        const property = await response.json();
+        const property = await getPropertyById(propertyId);
 
         setTitle(property.title || "");
         setType(property.type || "Apartment");
@@ -72,19 +66,8 @@ const EditPropertyPage = () => {
     };
 
     try {
-      const response = await fetch(`/api/properties/${propertyId}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(updatedProperty),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to update property");
-      }
-
-      navigate("/");
+      await updateProperty(propertyId, updatedProperty);
+      navigate(`/properties/${propertyId}`);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -92,9 +75,7 @@ const EditPropertyPage = () => {
     }
   };
 
-  if (loading) {
-    return <p>Loading property...</p>;
-  }
+  if (loading) return <p>Loading property...</p>;
 
   return (
     <div className="create">
@@ -104,12 +85,7 @@ const EditPropertyPage = () => {
 
       <form onSubmit={submitForm}>
         <label>Title:</label>
-        <input
-          type="text"
-          required
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-        />
+        <input value={title} onChange={(e) => setTitle(e.target.value)} required />
 
         <label>Type:</label>
         <select value={type} onChange={(e) => setType(e.target.value)}>
@@ -120,70 +96,50 @@ const EditPropertyPage = () => {
 
         <label>Description:</label>
         <textarea
-          required
           value={description}
           onChange={(e) => setDescription(e.target.value)}
+          required
         />
 
         <label>Price:</label>
         <input
           type="number"
-          step="0.01"
-          min="0"
-          required
           value={price}
           onChange={(e) => setPrice(e.target.value)}
+          required
         />
 
         <label>Street Address:</label>
-        <input
-          type="text"
-          required
-          value={address}
-          onChange={(e) => setAddress(e.target.value)}
-        />
+        <input value={address} onChange={(e) => setAddress(e.target.value)} required />
 
         <label>City:</label>
-        <input
-          type="text"
-          required
-          value={city}
-          onChange={(e) => setCity(e.target.value)}
-        />
+        <input value={city} onChange={(e) => setCity(e.target.value)} required />
 
         <label>State:</label>
-        <input
-          type="text"
-          required
-          value={state}
-          onChange={(e) => setState(e.target.value)}
-        />
+        <input value={state} onChange={(e) => setState(e.target.value)} required />
 
         <label>Square Feet:</label>
         <input
           type="number"
-          min="0"
-          required
           value={squareFeet}
           onChange={(e) => setSquareFeet(e.target.value)}
+          required
         />
 
         <label>Year Built:</label>
         <input
           type="number"
-          min="1800"
-          required
           value={yearBuilt}
           onChange={(e) => setYearBuilt(e.target.value)}
+          required
         />
 
         <label>Bedrooms:</label>
         <input
           type="number"
-          min="0"
-          required
           value={bedrooms}
           onChange={(e) => setBedrooms(e.target.value)}
+          required
         />
 
         <button disabled={isSubmitting}>
