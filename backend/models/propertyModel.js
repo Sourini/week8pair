@@ -1,6 +1,8 @@
 const mongoose = require("mongoose");
 
-const propertySchema = new mongoose.Schema({
+const Schema = mongoose.Schema;
+
+const propertySchema = new Schema({
   title: { type: String, required: true }, // Short, descriptive name of the property
   type: { type: String, required: true }, // Property type, e.g., Apartment, House, Commercial
   description: { type: String, required: true }, // Detailed description of the property
@@ -13,6 +15,15 @@ const propertySchema = new mongoose.Schema({
   squareFeet: { type: Number, required: true }, // Total area of the property in square feet
   yearBuilt: { type: Number, required: true }, // Year the property was constructed
   bedrooms: { type: Number, required: true }, // Number of bedrooms in the property
+});
+
+propertySchema.set("toJSON", {
+  virtuals: true,
+  transform: (doc, ret) => {
+    ret.id = ret._id.toString();
+    delete ret._id;
+    return ret;
+  }
 });
 
 const Property = mongoose.model("Property", propertySchema);
