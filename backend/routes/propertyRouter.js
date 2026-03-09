@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const requireAuth = require("../middleware/requireAuth");
 const {
   getAllProperties,
   createProperty,
@@ -11,16 +12,16 @@ const {
 // GET /api/properties
 router.get("/", getAllProperties);
 
-// POST /api/properties
-router.post("/", createProperty);
-
 // GET /api/properties/:propertyId
 router.get("/:propertyId", getPropertyById);
 
+// POST /api/properties
+router.post("/", requireAuth, createProperty);
+
 // PUT /api/properties/:propertyId
-router.put("/:propertyId", updateProperty);
+router.put("/:propertyId", requireAuth, updateProperty);
 
 // DELETE /api/properties/:propertyId
-router.delete("/:propertyId", deleteProperty);
+router.delete("/:propertyId", requireAuth, deleteProperty);
 
 module.exports = router;

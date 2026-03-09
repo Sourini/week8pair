@@ -5,9 +5,9 @@ const mongoose = require("mongoose");
 const getAllProperties = async (req, res) => {
   try {
     const properties = await Property.find({}).sort({ createdAt: -1 });
-    res.status(200).json(properties);
+    return res.status(200).json(properties);
   } catch (error) {
-    res.status(500).json({ message: "Error fetching properties" });
+    return res.status(500).json({ message: "Error fetching properties" });
   }
 };
 
@@ -15,11 +15,10 @@ const getAllProperties = async (req, res) => {
 const createProperty = async (req, res) => {
   try {
     const newProperty = await Property.create({ ...req.body });
-    res.status(201).json(newProperty);
+    return res.status(201).json(newProperty);
   } catch (error) {
-    res.status(400).json({ message: "Error creating property" });
+    return res.status(400).json({ message: "Error creating property" });
   }
-  res.status(500).json({ message: "Server error" });
 };
 
 // GET /api/properties/:propertyId
@@ -32,12 +31,12 @@ const getPropertyById = async (req, res) => {
   try {
     const property = await Property.findById(propertyId);
     if (property) {
-      res.status(200).json(property);
+      return res.status(200).json(property);
     } else {
-      res.status(404).json({ message: "Property not found" });
+      return res.status(404).json({ message: "Property not found" });
     }
   } catch (error) {
-    res.status(500).json({ message: "Failed to fetch property" });
+    return res.status(500).json({ message: "Failed to fetch property" });
   }
 };
 
@@ -51,15 +50,15 @@ const updateProperty = async (req, res) => {
     const updatedProperty = await Property.findOneAndUpdate(
       { _id: propertyId },
       { ...req.body },
-      { returnDeocument: "after" }
+      { returnDocument: "after" }
     );
     if (updatedProperty) {
       res.status(200).json(updatedProperty);
     } else {
-      res.status(404).json({ message: "Property not found" });
+      return res.status(404).json({ message: "Property not found" });
     }
   } catch (error) {
-    res.status(500).json({ message: "Failed to update property" });
+    return res.status(500).json({ message: "Failed to update property" });
   }
 };
 
@@ -72,12 +71,12 @@ const deleteProperty = async (req, res) => {
   try {
     const deleteProperty = await Property.findByIdAndDelete(propertyId);
     if (deleteProperty) {
-      res.status(204).send();
+      return res.status(204).send();
     } else {
-      res.status(404).json({ message: "Property not found" });
+      return res.status(404).json({ message: "Property not found" });
     }
   } catch (error) {
-    res.status(500).json({ message: "Failed to delete property" });
+    return res.status(500).json({ message: "Failed to delete property" });
   }
 };
 

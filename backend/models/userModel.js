@@ -1,0 +1,33 @@
+const mongoose = require("mongoose");
+const Schema = mongoose.Schema;
+
+const userSchema = new Schema(
+  {
+    name: { type: String, required: true }, // Full name of the user
+    email: { type: String, required: true, unique: true }, // User email for login
+    password: { type: String, required: true }, // Hashed password for authentication
+    phoneNumber: { type: String, required: true }, // Contact phone number
+    profilePicture: { type: String, required: false }, // URL of the user's profile picture
+    gender: { type: String, required: false }, // Gender of the user
+    dateOfBirth: { type: Date, required: true }, // User's birth date
+    role: { type: String, required: true, enum: ['admin', 'user', 'moderator'], default: 'user' }, // User role
+    address: {
+      street: { type: String, required: true }, // Street address
+      city: { type: String, required: true }, // City
+      state: { type: String, required: true }, // State or region
+      zipCode: { type: String, required: true }, // Postal/ZIP code
+    },
+  },
+  { timestamps: true, versionKey: false }
+);
+
+userSchema.set("toJSON", {
+  virtuals: true,
+  transform: (doc, ret) => {
+    ret.id = ret._id.toString();
+    delete ret._id;
+    return ret;
+  }
+});
+
+module.exports = mongoose.model("User", userSchema);
